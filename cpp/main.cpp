@@ -69,6 +69,19 @@ void test_s(int i){
     }
 }
 
+void test_n(int i){
+    auto t0 = std_clock::now();
+    try{
+        auto p = new char[size_t(i)<<i];
+        auto t1 = std_clock::now();
+        auto diff_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1-t0).count();
+        printf( "v, %d, %f, %p\n", i, diff_ns*1e-6, p);
+    }
+    catch( std::exception & e ){
+        printf( "v, %d, fail\n", i);
+    }
+}
+
 int main(int argc, char const * argv[]){
     typedef void (*tester_t)(int);
     tester_t test = std::map<std::string,tester_t>({
@@ -77,6 +90,7 @@ int main(int argc, char const * argv[]){
         { "v"s, test_v },
         { "r"s, test_r },
         { "s"s, test_s },
+        { "n"s, test_n },
     })[argv[1]];
     for( int i=1 ; i<=29 ; ++i ){
         test(i);

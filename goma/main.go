@@ -35,12 +35,12 @@ func test_c(i int) {
 
 func gc() {
 	runtime.GC()
-	time.Sleep(time.Second)
+	time.Sleep(time.Millisecond * 10)
 }
 
 func main() {
 	proc := func() func(int) {
-		if 1 < len(os.Args) && os.Args[0] == "c" {
+		if 1 < len(os.Args) && os.Args[1] == "c" {
 			return test_c
 		}
 		return test_l
