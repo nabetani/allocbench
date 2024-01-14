@@ -33,7 +33,7 @@ def main(fn, kv, post):
     pyplot.style.use("ggplot")
     ytVals = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3, 1e4]
     ytLabels = ["%.0e" % y for y in ytVals ]
-    xtVals = range(0,33,4)
+    xtVals = range(0,30,4)
     ytLabels = ["%.0e" % y for y in ytVals ]
     z=5
     fig, axes = pyplot.subplots(nrows=1, ncols=1, figsize=(5*z, 3*z))
@@ -41,8 +41,9 @@ def main(fn, kv, post):
     ax.set_yscale('log')
     ax.set_xlim([0,32])
     ax.set_ylim([ytVals[0], ytVals[len(ytVals)-1]])
-    ax.set_yticks(ytVals, ytLabels, fontsize=8*z, fontname="Menlo")
-    ax.set_xticks(xtVals, list(xtVals), fontsize=8*z, fontname="Menlo")
+    fontsize = 7*z
+    ax.set_yticks(ytVals, ytLabels, fontsize=fontsize, fontname="Menlo")
+    ax.set_xticks(xtVals, list(xtVals), fontsize=fontsize, fontname="Menlo")
     axnum=0
     linestyles = ["solid", "dashed", "dotted"] + ["dotted"]*10
     for k in kv:
@@ -57,8 +58,8 @@ def main(fn, kv, post):
         t = [ mid(ts) for ts in ticks ]
         ax.plot(t, lw=(10-axnum) * z/2, linestyle=linestyles[axnum] ,label=kv[k] )
         axnum+=1        
-    ax.set_title(fn + "/" + post, fontsize=15*z)
-    ax.legend(loc="upper left", fontsize=8*z)
+    ax.set_title(f"{fn} / {post}", fontsize=25*z)
+    ax.legend(loc="upper left", fontsize=fontsize)
     pyplot.tight_layout()
     pyplot.savefig(f"graph/{fn}_{post}.png")
 
