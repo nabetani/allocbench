@@ -31,13 +31,18 @@ def toFloat(row):
 
 def main(fn, kv, post):
     pyplot.style.use("ggplot")
-    ytVals = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2]
+    ytVals = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2, 1e3, 1e4]
+    ytLabels = ["%.0e" % y for y in ytVals ]
+    xtVals = range(0,33,4)
     ytLabels = ["%.0e" % y for y in ytVals ]
     z=5
     fig, axes = pyplot.subplots(nrows=1, ncols=1, figsize=(5*z, 3*z))
     ax = axes
     ax.set_yscale('log')
+    ax.set_xlim([0,32])
+    ax.set_ylim([ytVals[0], ytVals[len(ytVals)-1]])
     ax.set_yticks(ytVals, ytLabels, fontsize=8*z, fontname="Menlo")
+    ax.set_xticks(xtVals, list(xtVals), fontsize=8*z, fontname="Menlo")
     axnum=0
     linestyles = ["solid", "dashed", "dotted"] + ["dotted"]*10
     for k in kv:
@@ -59,16 +64,26 @@ def main(fn, kv, post):
 
 # main(f"cpp_clang_n_rp64")
 
-for pc in ["macm1", "rp32", "rp64"]:
-    for cc in (["clang"] if pc=="macm1" else ["gcc"]):
+def cpp():
+    for pc in ["macm1", "rp32", "rp64"]:
+        for cc in (["clang"] if pc=="macm1" else ["gcc"]):
+            m = {
+                "c":"calloc",
+                "m":"malloc",
+                "v":"vec (ctor with size)",
+                "r":"vec (reserve(size))",
+                "s":"vec (resize(size))",
+                "n":"new",
+            }
+            main(f"cpp_{cc}", m, pc)
+
+def go():
+    for pc in ["macm1", "rp32", "rp64"]:
         m = {
-            "c":"calloc",
-            "m":"malloc",
-            "v":"vec (ctor with size)",
-            "r":"vec (reserve(size))",
-            "s":"vec (resize(size))",
-            "n":"new",
+            "c":"capacity",
+            "l":"length",
         }
-        main(f"cpp_{cc}", m, pc)
+        main(f"go", m, pc)
 
-
+cpp()
+go()
