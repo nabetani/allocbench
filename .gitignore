@@ -1,0 +1,8 @@
+cpp/clang.out
+cpp/gcc.out
+cpp/res_clang
+cpp/res_gcc
+cpp/mac_m1.out
+cpp/macm1.out
+goma/goma
+py/venv
