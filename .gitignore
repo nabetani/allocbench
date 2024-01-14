@@ -6,3 +6,6 @@ cpp/mac_m1.out
 cpp/macm1.out
 goma/goma
 py/venv
+py/graph/*.png
+*/.DS_Store
+.DS_Store
