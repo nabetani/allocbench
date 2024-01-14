@@ -2,6 +2,7 @@ import matplotlib
 import matplotlib.pyplot as pyplot
 import glob
 import re
+import math
 import pandas as pd
 
 def _draw(ax, t):
@@ -15,9 +16,16 @@ def _draw(ax, t):
 def mid(a):
     return sorted(a)[len(a)//2]
 
-def toFloat(s):
+def toFloat(row):
     try:
-        return float(s)
+        ptr = row["ptr"]
+        if type(ptr) is float and math.isnan(ptr):
+            return float('nan')
+        print( "ptr is ", repr(ptr))
+        p = int(ptr, 16)
+        if p==0:
+            return float('nan')
+        return float(row["tick"])
     except ValueError:
         return float('nan')
 
@@ -40,7 +48,7 @@ def main(fn, kv, post):
                 print( ix, row["bits"], row["tick"] )
                 if len(ticks)<=ix:
                     ticks.append([])
-                ticks[ix].append(toFloat(row["tick"]))
+                ticks[ix].append(toFloat(row))
         t = [ mid(ts) for ts in ticks ]
         ax.plot(t, lw=(10-axnum) * z/2, linestyle=linestyles[axnum] ,label=kv[k] )
         axnum+=1        
@@ -52,7 +60,7 @@ def main(fn, kv, post):
 # main(f"cpp_clang_n_rp64")
 
 for pc in ["macm1", "rp32", "rp64"]:
-    for cc in [ "clang", "gcc"]:
+    for cc in (["clang"] if pc=="macm1" else ["gcc"]):
         m = {
             "c":"calloc",
             "m":"malloc",
