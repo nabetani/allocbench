@@ -21,37 +21,46 @@ def toFloat(s):
     except ValueError:
         return float('nan')
 
-def main(fn):
+def main(fn, kv, post):
     pyplot.style.use("ggplot")
     ytVals = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 1e1, 1e2]
     ytLabels = ["%.0e" % y for y in ytVals ]
-    ticks=[]
-    for i in range(5):
-        df = pd.read_csv(f"../res/{fn}_{i}.csv", encoding = "utf-8", names=['type', 'bits', 'tick', 'ptr'])
-        for ix, row in df.iterrows():
-            print( ix, row["bits"], row["tick"] )
-            if len(ticks)<=ix:
-                ticks.append([])
-            ticks[ix].append(row["tick"])
-    t = [toFloat(e) for e in [ mid(ts) for ts in ticks ] ]
-    print(t)
     z=5
     fig, axes = pyplot.subplots(nrows=1, ncols=1, figsize=(5*z, 3*z))
-    for i in range(6):
-        ax = axes
-        ax.set_yscale('log')
-        ax.plot(t, lw=z*3)
-
+    ax = axes
+    ax.set_yscale('log')
     ax.set_yticks(ytVals, ytLabels, fontsize=8*z, fontname="Menlo")
-    ax.set_title(fn, fontsize=15*z)
+    axnum=0
+    linestyles = ["solid", "dashed", "dotted"] + ["dotted"]*10
+    for k in kv:
+        ticks=[]
+        for i in range(5):
+            df = pd.read_csv(f"../res/{fn}_{k}_{post}_{i}.csv", encoding = "utf-8", names=['type', 'bits', 'tick', 'ptr'])
+            for ix, row in df.iterrows():
+                print( ix, row["bits"], row["tick"] )
+                if len(ticks)<=ix:
+                    ticks.append([])
+                ticks[ix].append(toFloat(row["tick"]))
+        t = [ mid(ts) for ts in ticks ]
+        ax.plot(t, lw=(10-axnum) * z/2, linestyle=linestyles[axnum] ,label=kv[k] )
+        axnum+=1        
+    ax.set_title(fn + "/" + post, fontsize=15*z)
+    ax.legend(loc="upper left", fontsize=8*z)
     pyplot.tight_layout()
-    pyplot.savefig(f"graph/{fn}.png")
+    pyplot.savefig(f"graph/{fn}_{post}.png")
 
 # main(f"cpp_clang_n_rp64")
 
 for pc in ["macm1", "rp32", "rp64"]:
     for cc in [ "clang", "gcc"]:
-        for m in [ "c", "n", "v", "r","s", "m"]:
-            main(f"cpp_clang_{m}_{pc}")
+        m = {
+            "c":"calloc",
+            "m":"malloc",
+            "v":"vec (ctor with size)",
+            "r":"vec (reserve(size))",
+            "s":"vec (resize(size))",
+            "n":"new",
+        }
+        main(f"cpp_{cc}", m, pc)
 
 
